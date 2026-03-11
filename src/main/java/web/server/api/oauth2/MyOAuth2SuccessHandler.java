@@ -12,10 +12,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import web.server.api.dto.MyOAuth2User;
-import web.server.api.entity.TokenEntity;
+import web.server.api.entity.TokenRefreshEntity;
 import web.server.api.jwt.JwtUtil;
 import web.server.api.service.SecretService;
-import web.server.api.service.TokenService;
+import web.server.api.service.TokenRefreshService;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -28,7 +28,7 @@ public class MyOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandle
     private static final Logger log = LoggerFactory.getLogger(MyOAuth2SuccessHandler.class);
 
     private final JwtUtil jwtUtil;
-    private final TokenService tokenService;
+    private final TokenRefreshService tokenRefreshService;
     private final SecretService secretService;
 
     @Value("${app.url}")
@@ -36,11 +36,11 @@ public class MyOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandle
 
     public MyOAuth2SuccessHandler(
             JwtUtil jwtUtil,
-            TokenService tokenService,
+            TokenRefreshService tokenRefreshService,
     		SecretService secretService) {
 
         this.jwtUtil = jwtUtil;
-        this.tokenService = tokenService;
+        this.tokenRefreshService = tokenRefreshService;
         this.secretService = secretService;
     }
 
@@ -67,11 +67,11 @@ public class MyOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandle
         String newAccessToken = jwtUtil.createJwt("access", username, role, secretService.getJwtAccess());
         String newRefreshToken = jwtUtil.createJwt("refresh", username, role, secretService.getJwtRefresh());
 
-        TokenEntity tokenEntity = new TokenEntity();
-        tokenEntity.setUsername(username);
-        tokenEntity.setToken(newRefreshToken);
-        tokenEntity.setExpiration(Instant.now().plusMillis(secretService.getJwtRefresh()));
-        tokenService.insert(tokenEntity);
+        TokenRefreshEntity tokenRefreshEntity = new TokenRefreshEntity();
+        tokenRefreshEntity.setUsername(username);
+        tokenRefreshEntity.setToken(newRefreshToken);
+        tokenRefreshEntity.setExpiration(Instant.now().plusMillis(secretService.getJwtRefresh()));
+        tokenRefreshService.insert(tokenRefreshEntity);
 
         response.setHeader("Authorization", "Bearer " + newAccessToken);
 

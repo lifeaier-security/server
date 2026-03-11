@@ -7,58 +7,58 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import web.server.api.entity.MailVerificationEntity;
-import web.server.api.entity.TokenEntity;
+import web.server.api.entity.TokenMailEntity;
+import web.server.api.entity.TokenRefreshEntity;
 import web.server.api.entity.UserEntity;
 import web.server.api.jwt.JwtUtil;
-import web.server.api.mapper.MailVerificationMapper;
+import web.server.api.mapper.TokenMailMapper;
 import web.server.api.mapper.UserMapper;
 import web.server.api.utility.MailVerificationUtility;
 
 import java.time.Instant;
 
 @Service
-public class MailVerificationService {
+public class MailVerifyService {
 
-    private static final Logger log = LoggerFactory.getLogger(MailVerificationService.class);
+    private static final Logger log = LoggerFactory.getLogger(MailVerifyService.class);
 
-    private final MailVerificationMapper mailVerificationMapper;
+    private final TokenMailMapper tokenMailMapper;
     private final UserMapper userMapper;
 
     private final JwtUtil jwtUtil;
 
-    private final TokenService tokenService;
+    private final TokenRefreshService tokenRefreshService;
     private final SecretService secretService;
 
-    private final MailService mailService;
+    private final MailSendService mailSendService;
 
     @Value("${app.url}")
     private String appUrl;
 
-    public MailVerificationService(
-            MailVerificationMapper mailVerificationMapper,
+    public MailVerifyService(
+            TokenMailMapper tokenMailMapper,
             UserMapper userMapper,
             JwtUtil jwtUtil,
-            TokenService tokenService,
+            TokenRefreshService tokenRefreshService,
             SecretService secretService,
-            MailService mailService) {
+            MailSendService mailSendService) {
 
-        this.mailVerificationMapper = mailVerificationMapper;
+        this.tokenMailMapper = tokenMailMapper;
         this.userMapper = userMapper;
 
         this.jwtUtil = jwtUtil;
-        this.tokenService = tokenService;
+        this.tokenRefreshService = tokenRefreshService;
         this.secretService = secretService;
 
-        this.mailService = mailService;
+        this.mailSendService = mailSendService;
     }
 
-    public MailVerificationEntity selectByToken(String token) {
-        return mailVerificationMapper.selectByToken(token);
+    public TokenMailEntity selectByToken(String token) {
+        return tokenMailMapper.selectByToken(token);
     }
 
-    public int insert(MailVerificationEntity entity) {
-        return mailVerificationMapper.insert(entity);
+    public int insert(TokenMailEntity entity) {
+        return tokenMailMapper.insert(entity);
     }
 
     // 1 hour
@@ -66,26 +66,26 @@ public class MailVerificationService {
     public void deleteExpiredTokens() {
     	Instant expiration = Instant.now();
         log.info("DB mail verification token check time: " + expiration);
-        mailVerificationMapper.deleteExpiredTokens(expiration);
+        tokenMailMapper.deleteExpiredTokens(expiration);
     }
 
     public int deleteByToken(String token) {
-        return mailVerificationMapper.deleteByToken(token);
+        return tokenMailMapper.deleteByToken(token);
     }
 
     public boolean verify(
             String token,
             HttpServletResponse response) {
 
-        MailVerificationEntity mailVerificationEntity = mailVerificationMapper.selectByToken(token);
+        TokenMailEntity tokenMailEntity = tokenMailMapper.selectByToken(token);
 
-        if (mailVerificationEntity == null) {
+        if (tokenMailEntity == null) {
             return false;
         }
 
-        String username = mailVerificationEntity.getUsername();
+        String username = tokenMailEntity.getUsername();
 
-        mailVerificationMapper.deleteByUsername(username);
+        tokenMailMapper.deleteByUsername(username);
 
         userMapper.verify(username);
 
@@ -98,11 +98,11 @@ public class MailVerificationService {
         String newAccessToken = jwtUtil.createJwt("access", username, role, secretService.getJwtAccess());
         String newRefreshToken = jwtUtil.createJwt("refresh", username, role, secretService.getJwtRefresh());
 
-        TokenEntity tokenEntity = new TokenEntity();
-        tokenEntity.setUsername(username);
-        tokenEntity.setToken(newRefreshToken);
-        tokenEntity.setExpiration(Instant.now().plusMillis(secretService.getJwtRefresh()));
-        tokenService.insert(tokenEntity);
+        TokenRefreshEntity tokenRefreshEntity = new TokenRefreshEntity();
+        tokenRefreshEntity.setUsername(username);
+        tokenRefreshEntity.setToken(newRefreshToken);
+        tokenRefreshEntity.setExpiration(Instant.now().plusMillis(secretService.getJwtRefresh()));
+        tokenRefreshService.insert(tokenRefreshEntity);
 
         response.setHeader("Authorization", "Bearer " + newAccessToken);
 
@@ -126,17 +126,17 @@ public class MailVerificationService {
         String email = userEntity.getEmail();
         String token = MailVerificationUtility.generateToken();
 
-        MailVerificationEntity entity = new MailVerificationEntity();
+        TokenMailEntity entity = new TokenMailEntity();
         entity.setUsername(username);
         entity.setToken(token);
-        entity.setExpiration(Instant.now().plusMillis(secretService.getMailVerificationTokenExpire()));
-        mailVerificationMapper.insert(entity);
+        entity.setExpiration(Instant.now().plusMillis(secretService.getTokenMailExpire()));
+        tokenMailMapper.insert(entity);
 
         String url = appUrl + "/verify?token=" + token;
 
-        mailService.sendMail(
+        mailSendService.sendMail(
                 email,
-                "[SHINE-UG] Mail Verification",
+                "Verify Mail",
                 url
         );
     }

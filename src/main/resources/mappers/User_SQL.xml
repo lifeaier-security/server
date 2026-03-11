@@ -3,37 +3,37 @@
 <mapper namespace="web.server.api.mapper.UserMapper">
 
     <select id="select" resultType="web.server.api.entity.UserEntity">
-        SELECT user_id, provider, username, name FROM vc_user;
+        SELECT user_id, provider, username, name FROM mt_user;
     </select>
 
     <select id="selectByUsername" resultType="web.server.api.entity.UserEntity" parameterType="String">
-        SELECT * FROM vc_user WHERE username = #{username};
+        SELECT * FROM mt_user WHERE username = #{username};
     </select>
 
     <insert id="insert" parameterType="web.server.api.entity.UserEntity">
-        INSERT INTO shineug.vc_user (provider, username, password, name, email, role, picture, verified)
+        INSERT INTO mt_user (provider, username, password, name, email, role, picture, verified)
         VALUES (#{provider}, #{username}, #{password}, #{name}, #{email}, #{role}, #{picture}, #{verified});
     </insert>
 
     <update id="update" parameterType="web.server.api.entity.UserEntity">
-        UPDATE shineug.vc_user
+        UPDATE mt_user
         SET name = #{name}, picture = #{picture}, updated_at = NOW()
         WHERE username = #{username};
     </update>
 
     <delete id="deleteByUsername" parameterType="String">
-        DELETE FROM shineug.vc_user
+        DELETE FROM mt_user
         WHERE username = #{username};
     </delete>
 
     <select id="existsByUsername" resultType="int" parameterType="web.server.api.entity.UserEntity">
         SELECT COUNT(1)
-        FROM shineug.vc_user
+        FROM mt_user
         WHERE provider = #{provider} and username = #{username}
     </select>
 
     <update id="verify" parameterType="String">
-        UPDATE shineug.vc_user
+        UPDATE mt_user
         SET verified = 'Y'
         WHERE username = #{username};
     </update>

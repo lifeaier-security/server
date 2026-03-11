@@ -19,9 +19,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import tools.jackson.databind.ObjectMapper;
 import web.server.api.common.ErrorCode;
 import web.server.api.dto.MyUserDetails;
-import web.server.api.entity.TokenEntity;
+import web.server.api.entity.TokenRefreshEntity;
 import web.server.api.service.SecretService;
-import web.server.api.service.TokenService;
+import web.server.api.service.TokenRefreshService;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -34,7 +34,7 @@ public class MyLoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-    private final TokenService tokenService;
+    private final TokenRefreshService tokenRefreshService;
     private final SecretService secretService;
 
     @Value("${app.url}")
@@ -43,12 +43,12 @@ public class MyLoginFilter extends UsernamePasswordAuthenticationFilter {
     public MyLoginFilter(
             AuthenticationManager authenticationManager,
             JwtUtil jwtUtil,
-            TokenService tokenService,
+            TokenRefreshService tokenRefreshService,
             SecretService secretService) {
 
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
-        this.tokenService = tokenService;
+        this.tokenRefreshService = tokenRefreshService;
         this.secretService = secretService;
     }
 
@@ -128,11 +128,11 @@ public class MyLoginFilter extends UsernamePasswordAuthenticationFilter {
         String newAccessToken = jwtUtil.createJwt("access", username, role, secretService.getJwtAccess());
         String newRefreshToken = jwtUtil.createJwt("refresh", username, role, secretService.getJwtRefresh());
 
-        TokenEntity tokenEntity = new TokenEntity();
-        tokenEntity.setUsername(username);
-        tokenEntity.setToken(newRefreshToken);
-        tokenEntity.setExpiration(Instant.now().plusMillis(secretService.getJwtRefresh()));
-        tokenService.insert(tokenEntity);
+        TokenRefreshEntity tokenRefreshEntity = new TokenRefreshEntity();
+        tokenRefreshEntity.setUsername(username);
+        tokenRefreshEntity.setToken(newRefreshToken);
+        tokenRefreshEntity.setExpiration(Instant.now().plusMillis(secretService.getJwtRefresh()));
+        tokenRefreshService.insert(tokenRefreshEntity);
 
         response.setHeader("Authorization", "Bearer " + newAccessToken);
 

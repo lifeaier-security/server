@@ -7,7 +7,7 @@ import java.time.Instant;
 
 @Setter
 @Getter
-public class MailVerificationEntity {
+public class TokenRefreshEntity {
 
     private String username;
     private String token;

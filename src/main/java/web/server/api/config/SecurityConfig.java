@@ -28,7 +28,7 @@ import web.server.api.oauth2.MyOAuth2AuthorizedClientService;
 import web.server.api.oauth2.MyOAuth2SuccessHandler;
 import web.server.api.service.MyOAuth2UserService;
 import web.server.api.service.SecretService;
-import web.server.api.service.TokenService;
+import web.server.api.service.TokenRefreshService;
 
 import java.util.Collections;
 import java.util.List;
@@ -41,7 +41,7 @@ public class SecurityConfig {
     private String appUrl;
 
     private final JwtUtil jwtUtil;
-    private final TokenService tokenService;
+    private final TokenRefreshService tokenRefreshService;
     private final MyLogoutHelper myLogoutHelper;
 
     private final MyOAuth2UserService myOAuth2UserService;
@@ -57,7 +57,7 @@ public class SecurityConfig {
     public SecurityConfig(
             // token related
             JwtUtil jwtUtil,
-            TokenService tokenService,
+            TokenRefreshService tokenRefreshService,
             MyLogoutHelper myLogoutHelper,
             // oauth2 related
             MyOAuth2UserService myOAuth2UserService,
@@ -71,7 +71,7 @@ public class SecurityConfig {
             SecretService secretService) {
 
         this.jwtUtil = jwtUtil;
-        this.tokenService = tokenService;
+        this.tokenRefreshService = tokenRefreshService;
         this.myLogoutHelper = myLogoutHelper;
 
         this.myOAuth2UserService = myOAuth2UserService;
@@ -149,7 +149,7 @@ public class SecurityConfig {
         http.addFilterAt(new MyLoginFilter(
                 authenticationManager(authenticationConfiguration),
                 jwtUtil,
-                tokenService,
+                tokenRefreshService,
                 secretService), UsernamePasswordAuthenticationFilter.class);
 
         http.addFilterAfter(new MyJwtFilter(jwtUtil), MyLoginFilter.class);

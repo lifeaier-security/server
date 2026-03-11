@@ -1,16 +1,16 @@
 package web.server.api.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import web.server.api.entity.MailVerificationEntity;
+import web.server.api.entity.TokenMailEntity;
 
 import java.time.Instant;
 
 @Mapper
-public interface MailVerificationMapper {
+public interface TokenMailMapper {
 
-    MailVerificationEntity selectByToken(String token);
+    TokenMailEntity selectByToken(String token);
 
-    int insert(MailVerificationEntity entity);
+    int insert(TokenMailEntity entity);
 
     int deleteExpiredTokens(Instant expiration);
 

@@ -8,26 +8,26 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import tools.jackson.databind.ObjectMapper;
 import web.server.api.common.ErrorCode;
-import web.server.api.service.MailVerificationService;
+import web.server.api.service.MailVerifyService;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-public class MailVerificationController {
+public class MailVerifyController {
 
-    private static final Logger log = LoggerFactory.getLogger(MailVerificationController.class);
+    private static final Logger log = LoggerFactory.getLogger(MailVerifyController.class);
 
-    private final MailVerificationService mailVerificationService;
+    private final MailVerifyService mailVerifyService;
 
     @Value("${app.url}")
     private String appUrl;
 
-    public MailVerificationController(
-            MailVerificationService mailVerificationService
+    public MailVerifyController(
+            MailVerifyService mailVerifyService
     ) {
-        this.mailVerificationService = mailVerificationService;
+        this.mailVerifyService = mailVerifyService;
     }
 
     @PostMapping("/verify")
@@ -36,7 +36,7 @@ public class MailVerificationController {
             HttpServletResponse response) throws IOException {
 
         String token = data.get("token").toString();
-        boolean success = mailVerificationService.verify(token, response);
+        boolean success = mailVerifyService.verify(token, response);
 
         if (success) {
             response.setStatus(HttpServletResponse.SC_OK);
@@ -59,6 +59,6 @@ public class MailVerificationController {
 
         String username = data.get("username").toString();
 
-        mailVerificationService.resend(username);
+        mailVerifyService.resend(username);
     }
 }

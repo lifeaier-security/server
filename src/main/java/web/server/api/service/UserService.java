@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import web.server.api.dto.UserDTO;
 import web.server.api.entity.UserEntity;
 import web.server.api.mapper.OAuth2Mapper;
-import web.server.api.mapper.TokenMapper;
+import web.server.api.mapper.TokenRefreshMapper;
 import web.server.api.mapper.UserMapper;
 
 @Service
@@ -14,15 +14,15 @@ public class UserService {
 
     private final UserMapper userMapper;
     private final OAuth2Mapper oauth2Mapper;
-    private final TokenMapper tokenMapper;
+    private final TokenRefreshMapper tokenRefreshMapper;
 
     public UserService(UserMapper userMapper,
                        OAuth2Mapper oauth2Mapper,
-                       TokenMapper tokenMapper) {
+                       TokenRefreshMapper tokenRefreshMapper) {
 
         this.userMapper = userMapper;
         this.oauth2Mapper = oauth2Mapper;
-        this.tokenMapper = tokenMapper;
+        this.tokenRefreshMapper = tokenRefreshMapper;
     }
 
     public UserDTO selectByUsername() {
@@ -54,11 +54,11 @@ public class UserService {
         // 2. delete oauth2_authorized_client by username = principal_name
         oauth2Mapper.deleteByUsername(username);
 
-        // 3. delete vc_token by username
+        // 3. delete mt_refresh_token by username
         // token will be deleted in MyLogoutHelder
         //tokenMapper.deleteByUsername(username);
 
-        // 4. delete vc_user by username
+        // 4. delete mt_user by username
         userMapper.deleteByUsername(username);
 
         // 5. logout in controller

@@ -3,7 +3,7 @@
 <mapper namespace="web.server.api.mapper.OAuth2Mapper">
 
     <delete id="deleteByUsername" parameterType="String">
-        delete from shineug.oauth2_authorized_client where principal_name = #{username};
+        delete from oauth2_authorized_client where principal_name = #{username};
     </delete>
 
 </mapper>

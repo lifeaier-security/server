@@ -7,7 +7,7 @@ import java.time.Instant;
 
 @Setter
 @Getter
-public class TokenEntity {
+public class TokenMailEntity {
 
     private String username;
     private String token;

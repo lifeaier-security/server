@@ -1,17 +1,17 @@
 package web.server.api.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import web.server.api.entity.TokenEntity;
+import web.server.api.entity.TokenRefreshEntity;
 
 import java.time.Instant;
 import java.util.List;
 
 @Mapper
-public interface TokenMapper {
+public interface TokenRefreshMapper {
 
-    List<TokenEntity> selectByToken(String token);
+    List<TokenRefreshEntity> selectByToken(String token);
 
-    int insert(TokenEntity entity);
+    int insert(TokenRefreshEntity entity);
 
     int deleteExpiredTokens(Instant expiration);
 

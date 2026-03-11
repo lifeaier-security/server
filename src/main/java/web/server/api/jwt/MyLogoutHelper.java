@@ -8,8 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import web.server.api.entity.TokenEntity;
-import web.server.api.service.TokenService;
+import web.server.api.entity.TokenRefreshEntity;
+import web.server.api.service.TokenRefreshService;
 
 @Component
 public class MyLogoutHelper {
@@ -17,12 +17,12 @@ public class MyLogoutHelper {
     private static final Logger log = LoggerFactory.getLogger(MyLogoutFilter.class);
 
     private final JwtUtil jwtUtil;
-    private final TokenService tokenService;
+    private final TokenRefreshService tokenRefreshService;
 
     public MyLogoutHelper(JwtUtil jwtUtil,
-                          TokenService tokenService) {
+                          TokenRefreshService tokenRefreshService) {
         this.jwtUtil = jwtUtil;
-        this.tokenService = tokenService;
+        this.tokenRefreshService = tokenRefreshService;
     }
 
     public void logout(HttpServletRequest request,
@@ -52,14 +52,14 @@ public class MyLogoutHelper {
         }
 
         // DB에 저장되어 있는지 확인
-        TokenEntity tokenEntity = tokenService.selectByToken(clientRefreshToken);
-        if (tokenEntity == null) {
+        TokenRefreshEntity tokenRefreshEntity = tokenRefreshService.selectByToken(clientRefreshToken);
+        if (tokenRefreshEntity == null) {
             log.info("invalid refresh token");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
-        String serverRefreshToken = tokenEntity.getToken();
+        String serverRefreshToken = tokenRefreshEntity.getToken();
 
         // if token is EXPIRED, return.
         try {
@@ -68,13 +68,13 @@ public class MyLogoutHelper {
 
         } catch (ExpiredJwtException e) {
             log.info("expired refresh token");
-            tokenService.deleteByToken(serverRefreshToken);
+            tokenRefreshService.deleteByToken(serverRefreshToken);
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 
         // 로그아웃 진행
-        tokenService.deleteByToken(serverRefreshToken);
+        tokenRefreshService.deleteByToken(serverRefreshToken);
 
         // set client refresh-token null
         Cookie cookie = new Cookie("refresh", null);

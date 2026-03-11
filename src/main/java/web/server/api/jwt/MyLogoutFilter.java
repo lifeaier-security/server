@@ -1,19 +1,14 @@
 package web.server.api.jwt;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.filter.GenericFilterBean;
-
-import web.server.api.entity.TokenEntity;
-import web.server.api.service.TokenService;
 
 import java.io.IOException;
 

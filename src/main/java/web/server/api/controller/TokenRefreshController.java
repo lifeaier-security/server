@@ -11,30 +11,30 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import web.server.api.entity.TokenEntity;
+import web.server.api.entity.TokenRefreshEntity;
 import web.server.api.jwt.JwtUtil;
 import web.server.api.service.SecretService;
-import web.server.api.service.TokenService;
+import web.server.api.service.TokenRefreshService;
 
 import java.time.Instant;
 
 @RestController
 @RequestMapping("/token")
-public class TokenController {
+public class TokenRefreshController {
 
-    private static final Logger log = LoggerFactory.getLogger(TokenController.class);
+    private static final Logger log = LoggerFactory.getLogger(TokenRefreshController.class);
 
     private final JwtUtil jwtUtil;
-    private final TokenService tokenService;
+    private final TokenRefreshService tokenRefreshService;
     private final SecretService secretService;
 
-    public TokenController(
+    public TokenRefreshController(
             JwtUtil jwtUtil,
-            TokenService tokenService,
+            TokenRefreshService tokenRefreshService,
             SecretService secretService) {
 
         this.jwtUtil = jwtUtil;
-        this.tokenService = tokenService;
+        this.tokenRefreshService = tokenRefreshService;
         this.secretService = secretService;
     }
 
@@ -60,13 +60,13 @@ public class TokenController {
         }
 
         // DB에 저장되어 있는지 확인
-        TokenEntity tokenEntity = tokenService.selectByToken(clientRefreshToken);
-        if (tokenEntity == null) {
+        TokenRefreshEntity tokenRefreshEntity = tokenRefreshService.selectByToken(clientRefreshToken);
+        if (tokenRefreshEntity == null) {
             log.info("invalid refresh token");
             return new ResponseEntity<>("invalid refresh token", HttpStatus.UNAUTHORIZED);
         }
 
-        String serverRefreshToken = tokenEntity.getToken();
+        String serverRefreshToken = tokenRefreshEntity.getToken();
 
         // if token is EXPIRED, return.
         try {
@@ -75,7 +75,7 @@ public class TokenController {
 
         } catch (ExpiredJwtException e) {
             log.info("expired refresh token");
-            tokenService.deleteByToken(serverRefreshToken);
+            tokenRefreshService.deleteByToken(serverRefreshToken);
             return new ResponseEntity<>("refresh token expired", HttpStatus.UNAUTHORIZED);
         }
 
@@ -87,12 +87,12 @@ public class TokenController {
 
         // rotate refresh token
         //tokenService.deleteByUsername(username);
-        tokenService.deleteByToken(clientRefreshToken);
-        tokenEntity = new TokenEntity();
-        tokenEntity.setUsername(username);
-        tokenEntity.setToken(newRefreshToken);
-        tokenEntity.setExpiration(Instant.now().plusMillis(secretService.getJwtRefresh()));
-        tokenService.insert(tokenEntity);
+        tokenRefreshService.deleteByToken(clientRefreshToken);
+        tokenRefreshEntity = new TokenRefreshEntity();
+        tokenRefreshEntity.setUsername(username);
+        tokenRefreshEntity.setToken(newRefreshToken);
+        tokenRefreshEntity.setExpiration(Instant.now().plusMillis(secretService.getJwtRefresh()));
+        tokenRefreshService.insert(tokenRefreshEntity);
 
         response.setHeader("Authorization", "Bearer " + newAccessToken);
 

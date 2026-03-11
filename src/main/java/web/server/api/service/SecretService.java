@@ -11,17 +11,17 @@ public class SecretService {
     private Long jwtAccess;
     private Long jwtRefresh;
     private int jwtRefreshCookie;
-    private Long mailVerificationTokenExpire;
+    private Long tokenMailExpire;
 
     public SecretService(
             @Value("${jwt.access}")Long jwtAccess,
             @Value("${jwt.refresh}")Long jwtRefresh,
             @Value("${jwt.refresh.cookie}")int jwtRefreshCookie,
-            @Value("${mail.verification.token.expire}")Long mailVerificationTokenExpire) {
+            @Value("${token.mail.expire}")Long tokenMailExpire) {
 
         this.jwtAccess = jwtAccess;
         this.jwtRefresh = jwtRefresh;
         this.jwtRefreshCookie = jwtRefreshCookie;
-        this.mailVerificationTokenExpire = mailVerificationTokenExpire;
+        this.tokenMailExpire = tokenMailExpire;
     }
 }

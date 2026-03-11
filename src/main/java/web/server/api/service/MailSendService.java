@@ -5,18 +5,18 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MailService {
+public class MailSendService {
 
     private final JavaMailSender mailSender;
 
-    public MailService(JavaMailSender mailSender) {
+    public MailSendService(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
 
     public void sendMail(String to, String subject, String body) {
 
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("noreply@shineug.com");
+        message.setFrom("noreply@security.lifeaier.com");
         message.setTo(to);
         message.setSubject(subject);
         message.setText(body);
