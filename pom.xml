@@ -8,11 +8,11 @@
 		<version>4.0.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>web.server</groupId>
-	<artifactId>api</artifactId>
+	<groupId>com.lifeaier</groupId>
+	<artifactId>base</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>api</name>
-	<description>Web Server API</description>
+	<name>base</name>
+	<description>LifeAIer Server Base</description>
 	<url/>
 	<licenses>
 		<license/>

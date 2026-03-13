@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lifeaier.base.comm.user.mapper.UserMapper">
+
+    <select id="select" resultType="com.lifeaier.base.comm.user.entity.UserEntity">
+        SELECT user_id, provider, username, name FROM mt_user;
+    </select>
+
+    <select id="selectByUsername" resultType="com.lifeaier.base.comm.user.entity.UserEntity" parameterType="String">
+        SELECT * FROM mt_user WHERE username = #{username};
+    </select>
+
+    <insert id="insert" parameterType="com.lifeaier.base.comm.user.entity.UserEntity">
+        INSERT INTO mt_user (provider, username, password, name, email, role, picture, verified)
+        VALUES (#{provider}, #{username}, #{password}, #{name}, #{email}, #{role}, #{picture}, #{verified});
+    </insert>
+
+    <update id="update" parameterType="com.lifeaier.base.comm.user.entity.UserEntity">
+        UPDATE mt_user
+        SET name = #{name}, picture = #{picture}, updated_at = NOW()
+        WHERE username = #{username};
+    </update>
+
+    <delete id="deleteByUsername" parameterType="String">
+        DELETE FROM mt_user
+        WHERE username = #{username};
+    </delete>
+
+    <select id="existsByUsername" resultType="int" parameterType="com.lifeaier.base.comm.user.entity.UserEntity">
+        SELECT COUNT(1)
+        FROM mt_user
+        WHERE provider = #{provider} and username = #{username}
+    </select>
+
+    <update id="verify" parameterType="String">
+        UPDATE mt_user
+        SET verified = 'Y'
+        WHERE username = #{username};
+    </update>
+    
+</mapper>
