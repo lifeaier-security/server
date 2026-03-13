@@ -16,7 +16,7 @@ public class MailSendService {
     public void sendMail(String to, String subject, String body) {
 
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("noreply@security.lifeaier.com");
+        message.setFrom("noreply@www.lifeaier.com");
         message.setTo(to);
         message.setSubject(subject);
         message.setText(body);
