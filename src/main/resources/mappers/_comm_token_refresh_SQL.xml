@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.lifeaier.base.comm.token.mapper.TokenRefreshMapper">
+<mapper namespace="com.lifeaier.server.comm.token.mapper.TokenRefreshMapper">
 
-	<select id="selectByToken" resultType="com.lifeaier.base.comm.token.entity.TokenRefreshEntity" parameterType="String">
+	<select id="selectByToken" resultType="com.lifeaier.server.comm.token.entity.TokenRefreshEntity" parameterType="String">
         SELECT * FROM mt_refresh_token WHERE token = #{token};
     </select>
     
-    <insert id="insert" parameterType="com.lifeaier.base.comm.token.entity.TokenRefreshEntity">
+    <insert id="insert" parameterType="com.lifeaier.server.comm.token.entity.TokenRefreshEntity">
     	INSERT INTO mt_refresh_token (username, token, expiration)
 			VALUES (#{username}, #{token}, #{expiration});
     </insert>

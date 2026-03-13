@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.lifeaier.base.comm.mail.mapper.TokenMailMapper">
+<mapper namespace="com.lifeaier.server.comm.mail.mapper.TokenMailMapper">
 
-	<select id="selectByToken" resultType="com.lifeaier.base.comm.mail.entity.TokenMailEntity" parameterType="String">
+	<select id="selectByToken" resultType="com.lifeaier.server.comm.mail.entity.TokenMailEntity" parameterType="String">
         SELECT * FROM mt_mail_token WHERE token = #{token};
     </select>
     
-    <insert id="insert" parameterType="com.lifeaier.base.comm.mail.entity.TokenMailEntity">
+    <insert id="insert" parameterType="com.lifeaier.server.comm.mail.entity.TokenMailEntity">
         INSERT INTO mt_mail_token (username, token, expiration)
             VALUES (#{username}, #{token}, #{expiration});
     </insert>

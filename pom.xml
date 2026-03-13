@@ -9,10 +9,10 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.lifeaier</groupId>
-	<artifactId>base</artifactId>
+	<artifactId>server</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>base</name>
-	<description>LifeAIer Server Base</description>
+	<name>server</name>
+	<description>LifeAIer Server</description>
 	<url/>
 	<licenses>
 		<license/>
